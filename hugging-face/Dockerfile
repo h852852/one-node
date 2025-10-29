@@ -2,7 +2,10 @@ FROM ubuntu:22.04 AS builder
 
 WORKDIR /app
 
-RUN apt-get update; \
+# 替换为国内镜像源
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    apt-get update; \
     apt-get install -y wget unzip; \
     wget https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip; \
     unzip Xray-linux-64.zip; \
@@ -26,7 +29,9 @@ ENV TZ=Asia/Shanghai \
 COPY entrypoint.sh /entrypoint.sh
 COPY app /app
 
-RUN export DEBIAN_FRONTEND=noninteractive; \
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list && \
+    export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
     apt-get install -y tzdata openssh-server curl ca-certificates wget vim net-tools supervisor unzip iputils-ping telnet git iproute2 --no-install-recommends; \
     apt-get clean; \
